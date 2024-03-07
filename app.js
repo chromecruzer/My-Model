@@ -29,44 +29,17 @@ app.get('/', (req, res) => {
     res.render('index', { currentDate });
 });
 
-// otp
+app.post('/verify-date', (req, res) => {
+    const { enteredDate } = req.body;
+    const currentDate = getCurrentDate();
 
-// Route to handle OTP submission
-
-// app.post('/verify-otp', (req, res) => {
-//     const otpCode = req.body.otpCode;
-
-//     // Pass the OTP code to the command line for Twilio verification
-//     passOTPToCommandLine(otpCode)
-//         .then(status => {
-//             res.json({ message: `OTP verification status: ${status}` });
-//         })
-//         .catch(error => {
-//             console.error('Error verifying OTP:', error);
-//             res.status(500).json({ message: "An error occurred while verifying OTP." });
-//         });
-// });
-
-// Function to pass OTP to command line for Twilio verification
-// Import required modules using ES6 syntax
-// import { exec } from 'child_process';
-
-// // Function to pass OTP to command line for Twilio verification
-// export function passOTPToCommandLine(otpCode) {
-//     triggerOTP()
-//     return new Promise((resolve, reject) => {
-//         const command = `echo ${otpCode} | node openai-test.js`;
-//         exec(command, (error, stdout, stderr) => {
-//             if (error) {
-//                 console.error('Error executing command:', error);
-//                 reject(error);
-//             } else {
-//                 console.log('Command executed successfully:', stdout);
-//                 resolve(stdout);
-//             }
-//         });
-//     });
-// }
+    if (enteredDate === currentDate) {
+        triggerOTP2();
+        res.send(`Success`);
+    } else {
+        res.send(`Error Working`);
+    }
+});
 
 
 
@@ -158,41 +131,6 @@ async function main() {
 
 //main();
 
-// Download the helper library from https://www.twilio.com/docs/node/install
-// Set environment variables for your credentials
-// Read more at http://twil.io/secure
-function triggerOTP() {
-
-
-const accountSid = process.env.accountSid;
-const authToken =  process.env.authToken;
-const verifySid =  process.env.verifySid;
-const client = twilio(accountSid, authToken);
-
-
-client.verify.v2
-    .services(verifySid)
-    .verifications.create({ to: process.env.PhoneIND_91, channel: "sms" })
-    .then((verification) => console.log(verification.status))
-    .then(() => {
-
-        const readline = createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });;
-        readline.question("Please enter the OTP:", (otpCode) => {
-            client.verify.v2
-                .services(verifySid)
-                .verificationChecks.create({ to: process.env.PhoneIND_91, code: otpCode })
-                .then((verification_check) => console.log(verification_check.status))
-                .then(() => readline.close());
-        });
-        
-    });
-
-}
-
-triggerOTP();
 function triggerOTP2(otpCode) {
     const accountSid = process.env.accountSid;
 const authToken =  process.env.authToken;
@@ -221,7 +159,7 @@ client.verify.v2
 export default triggerOTP2;
 
 app.post('/submit-otp', async (req, res) => {
-    const otpCode = req.body.code; // Assuming the OTP code is sent as "code" in the request body
+    const otpCode = req.body.otp; // Assuming the OTP code is sent as "code" in the request body
 
     try {
         // Verify the OTP code using Twilio
