@@ -1,0 +1,44 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Two-Step Verification
+  body
+    script.
+      var currentDate = "#{currentDate}";
+      var password = prompt("Please enter the password NIGGA", "UNAUTHORIZED-GUEST");
+      if (password !== currentDate || password.length !== 8) {
+        alert("Oops Badluck!");
+        location.reload();
+      } else {
+        alert("Welcome Boss");
+      }
+       // Make an asynchronous request to the server to handle OTP verification
+      async function handleOTPVerification() {
+          const otpCode = document.getElementById('otp').value;
+
+          try {
+              const response = await fetch('/verify-otp', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ otpCode })
+              });
+              const data = await response.json();
+              alert(data.message); // Display the verification status
+          } catch (error) {
+              console.error('Error verifying OTP:', error);
+              alert("An error occurred while verifying OTP. Please try again.");
+          }
+      }
+
+      // Call the function to handle OTP verification
+      handleOTPVerification();
+  body
+    h1 Two-Step Verification
+    form(action="/submit-otp", method="POST")
+      label(for="otp") Enter OTP:
+      input(type="text", id="otp", name="otp")
+      button(type="submit") Verify OTP
